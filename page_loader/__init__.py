@@ -23,7 +23,3 @@ def download(url: str, path: str = os.getcwd()) -> str:
     with open(new_path, "w") as file:
         file.write(request.text)
     return new_path
-
-
-if __name__ == "__main__":
-    print(download("https://ru.hexlet.io/courses"))
