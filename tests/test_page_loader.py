@@ -68,7 +68,7 @@ def test_page_loader_download_files(dir_for_tests, requests_mock, image_diff):
                 assert file.read() == fixture.read()
 
         main_path = os.path.join(tmp_path, 'ru-hexlet-io-courses.html')
-        with open(main_path) as main, open(
-            'tests/fixtures/some-complex-page-com-after.html', "r"
-                ) as fixture:
-            assert main.read() == fixture.read()
+    with open(main_path) as main, open(
+        'tests/fixtures/some-complex-page-com-after.html', "r"
+            ) as fixture:
+        assert main.read() == fixture.read()
