@@ -72,12 +72,23 @@ def download(url: str, path: str = os.getcwd()) -> str:
     new_html_path = os.path.join(path, new_html_file_name)
 
     request = requests.get(url, headers=headers)
+    if request.status_code == 404:
+        print('Site with such url is not found!')
+        return '<Error>'
+    if request.status_code != 200:
+        print('Internal Server Error')
+        return '<Error>'
+
     with open(new_html_path, "w") as html_file:
         html_file.write(request.text)
 
     new_dir_path = f"{new_html_path[:-5]}_files"
     new_dir_name = os.path.split(new_dir_path)[1]
-    os.mkdir(new_dir_path)
+    try:
+        os.mkdir(new_dir_path)
+    except FileExistsError:
+        print('You have not deleted files from this folder since the last \
+               launch of the program!')
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
         hostname = urlparse(url).hostname
@@ -86,3 +97,7 @@ def download(url: str, path: str = os.getcwd()) -> str:
         file.write(str(soup.prettify()))
 
     return new_html_path
+
+
+if __name__ == "__main__":
+    download('https://google.com/blyat', '/home/reyan/testdir')
