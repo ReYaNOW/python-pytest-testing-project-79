@@ -9,6 +9,7 @@ packages = [{include = "page_loader"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 pytest-cov = "^4.0.0"
+beautifulsoup4 = "^4.12.2"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader_script:main"
