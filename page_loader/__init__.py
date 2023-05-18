@@ -89,6 +89,7 @@ def download(url: str, path: str = os.getcwd()) -> str:
     except FileExistsError:
         print('You have not deleted files from this folder since the last \
                launch of the program!')
+        return '<Error>'
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
         hostname = urlparse(url).hostname
