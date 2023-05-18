@@ -16,6 +16,21 @@ def url_to_filename(url: str, type=".html"):
     return result + type
 
 
+def url_validator(link, hostname):
+    if link[:4] != 'http' and link[:4] != 'www.':
+        if link[0] != '/':
+            link = f'/{link}'
+        link = f'{hostname}{link}'
+
+    if link[:4] != 'http':
+        link = f'http://{link}'
+    return link
+
+
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) \
+            Gecko/20100101 Firefox/112.0"}
+
+
 def get_images(request_text, path, new_dir_name, hostname):
     soup = BeautifulSoup(request_text, "html.parser")
     object = soup.find_all(["img", "link", "script"])
@@ -28,10 +43,11 @@ def get_images(request_text, path, new_dir_name, hostname):
                 obj_download_tag = 'src'
             case _:
                 continue
-        obj_link = object.attrs[obj_download_tag]
-        if urlparse(obj_link).netloc != hostname:
+        obj_link = object.get(obj_download_tag)
+        obj_link = url_validator(obj_link, hostname)
+        if urlparse(obj_link).hostname != hostname:
             continue
-        image = requests.get(obj_link).content
+        image = requests.get(obj_link, headers=headers).content
 
         splited_link = os.path.splitext(obj_link)
         if splited_link[-1] == '':
@@ -55,7 +71,7 @@ def download(url: str, path: str = os.getcwd()) -> str:
     new_html_file_name = url_to_filename(url)
     new_html_path = os.path.join(path, new_html_file_name)
 
-    request = requests.get(url)
+    request = requests.get(url, headers=headers)
     with open(new_html_path, "w") as html_file:
         html_file.write(request.text)
 
@@ -70,7 +86,3 @@ def download(url: str, path: str = os.getcwd()) -> str:
         file.write(str(soup.prettify()))
 
     return new_html_path
-
-
-if __name__ == "__main__":
-    download("https://ru.hexlet.io/courses")
