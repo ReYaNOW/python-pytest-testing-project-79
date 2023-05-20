@@ -31,7 +31,10 @@ def main():
         sys.exit(0)
 
     args = parser.parse_args()
-    print(download(args.url, args.output))
+    path = download(args.url, args.output)
+    absolute_path = os.path.abspath(path)
+    if path != '<Error>':
+        print(f"Page was downloaded as '{absolute_path}'")
 
 
 if __name__ == "__main__":

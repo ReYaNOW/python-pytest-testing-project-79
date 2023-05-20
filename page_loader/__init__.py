@@ -1,7 +1,11 @@
 import os
+import logging
 import requests
+from requests.exceptions import ConnectionError, MissingSchema
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+
+logging.basicConfig(level=logging.INFO)
 
 
 def url_to_filename(url: str, type=".html"):
@@ -17,18 +21,20 @@ def url_to_filename(url: str, type=".html"):
 
 
 def url_validator(link, hostname):
-    if link[:4] != 'http' and link[:4] != 'www.':
-        if link[0] != '/':
-            link = f'/{link}'
-        link = f'{hostname}{link}'
+    if link[:4] != "http" and link[:4] != "www.":
+        if link[0] != "/":
+            link = f"/{link}"
+        link = f"{hostname}{link}"
 
-    if link[:4] != 'http':
-        link = f'http://{link}'
+    if link[:4] != "http":
+        link = f"http://{link}"
     return link
 
 
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) \
-            Gecko/20100101 Firefox/112.0"}
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) \
+            Gecko/20100101 Firefox/112.0"
+}
 
 
 def get_images(request_text, path, new_dir_name, hostname):
@@ -37,10 +43,10 @@ def get_images(request_text, path, new_dir_name, hostname):
 
     for object in object:
         match object.attrs:
-            case {'href': _}:
-                obj_download_tag = 'href'
-            case {'src': _}:
-                obj_download_tag = 'src'
+            case {"href": _}:
+                obj_download_tag = "href"
+            case {"src": _}:
+                obj_download_tag = "src"
             case _:
                 continue
         obj_link = object.get(obj_download_tag)
@@ -50,9 +56,9 @@ def get_images(request_text, path, new_dir_name, hostname):
         image = requests.get(obj_link, headers=headers).content
 
         splited_link = os.path.splitext(obj_link)
-        if splited_link[-1] == '':
+        if splited_link[-1] == "":
             img_url, type = splited_link
-            type = '.html'
+            type = ".html"
         else:
             img_url, type = os.path.splitext(obj_link)
 
@@ -68,28 +74,43 @@ def get_images(request_text, path, new_dir_name, hostname):
 
 
 def download(url: str, path: str = os.getcwd()) -> str:
+    logging.info(f"requested url: {url}")
+    absoulute_path = os.path.abspath(path)
+    logging.info(f"output path: {absoulute_path}")
+
+    try:
+        request = requests.get(url, headers=headers)
+    except (ConnectionError, MissingSchema):
+        print("Not correct URL!")
+        return "<Error>"
+
+    if request.status_code == 404:
+        print("Site with such url is not found!")
+        return "<Error>"
+    if request.status_code != 200:
+        print("Internal Server Error")
+        return "<Error>"
+
     new_html_file_name = url_to_filename(url)
     new_html_path = os.path.join(path, new_html_file_name)
 
-    request = requests.get(url, headers=headers)
-    if request.status_code == 404:
-        print('Site with such url is not found!')
-        return '<Error>'
-    if request.status_code != 200:
-        print('Internal Server Error')
-        return '<Error>'
+    new_html_absolue_path = os.path.abspath(new_html_path)
+    logging.info(f"write html file: {new_html_absolue_path}")
 
     with open(new_html_path, "w") as html_file:
         html_file.write(request.text)
 
     new_dir_path = f"{new_html_path[:-5]}_files"
     new_dir_name = os.path.split(new_dir_path)[1]
+    new_dir_absolute_path = os.path.abspath(new_dir_path)
+    logging.info(f"create a directory for assets: {new_dir_absolute_path}")
+
     try:
         os.mkdir(new_dir_path)
     except FileExistsError:
-        print('You have not deleted files from this folder since the last \
-               launch of the program!')
-        return '<Error>'
+        print("You have not deleted files from this folder since the last \
+launch of the program!")
+        return "<Error>"
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
         hostname = urlparse(url).hostname
@@ -101,4 +122,4 @@ def download(url: str, path: str = os.getcwd()) -> str:
 
 
 if __name__ == "__main__":
-    download('https://google.com/blyat', '/home/reyan/testdir')
+    download("https://google", "/home/reyan/testdir")
