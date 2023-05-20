@@ -2,7 +2,7 @@ import os
 import logging
 import pytest
 from page_loader import download
-from requests.exceptions import HTTPError, MissingSchema
+from requests.exceptions import HTTPError, MissingSchema, ConnectionError
 
 logging.getLogger('PIL').setLevel(logging.CRITICAL)
 logging.basicConfig(level=logging.INFO)
@@ -15,10 +15,17 @@ def dir_for_tests(tmp_path):
     return f"{tmp_path}/dir"
 
 
-def test_page_loader_not_valid_url(dir_for_tests):
+def test_page_loader_not_correct_url(dir_for_tests):
     tmp_path = dir_for_tests
     with pytest.raises(MissingSchema) as error:
-        download("not_a_valid_url", tmp_path)
+        download("not_a_correct_url", tmp_path)
+        assert error == 'Not correct URL!'
+
+
+def test_page_loader_not_correct_url2(dir_for_tests):
+    tmp_path = dir_for_tests
+    with pytest.raises(ConnectionError) as error:
+        download("https://not_a_correct_url.ru", tmp_path)
         assert error == 'Not correct URL!'
 
 
