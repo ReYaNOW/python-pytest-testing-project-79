@@ -1,9 +1,10 @@
 import os
 import logging
 import requests
-from requests.exceptions import ConnectionError, MissingSchema
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+from page_loader.errors_handlers import request_errors_handler
+from page_loader.errors_handlers import io_errors_handler
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,9 +40,9 @@ headers = {
 
 def get_images(request_text, path, new_dir_name, hostname):
     soup = BeautifulSoup(request_text, "html.parser")
-    object = soup.find_all(["img", "link", "script"])
+    objects = soup.find_all(["img", "link", "script"])
 
-    for object in object:
+    for object in objects:
         match object.attrs:
             case {"href": _}:
                 obj_download_tag = "href"
@@ -78,21 +79,7 @@ def download(url: str, path: str = os.getcwd()) -> str:
     absoulute_path = os.path.abspath(path)
     logging.info(f"output path: {absoulute_path}")
 
-    try:
-        request = requests.get(url, headers=headers)
-    except (ConnectionError, MissingSchema):
-        print("Not correct URL!")
-        return "<Error>"
-
-    match request.status_code:
-        case 404:
-            print("Site with such url is not found!")
-            return "<Error>"
-        case 200:
-            pass
-        case _:
-            print("Internal Server Error")
-            return "<Error>"
+    request = request_errors_handler(url)
 
     new_html_file_name = url_to_filename(url)
     new_html_path = os.path.join(path, new_html_file_name)
@@ -100,20 +87,14 @@ def download(url: str, path: str = os.getcwd()) -> str:
     new_html_absolue_path = os.path.abspath(new_html_path)
     logging.info(f"write html file: {new_html_absolue_path}")
 
-    with open(new_html_path, "w") as html_file:
-        html_file.write(request.text)
+    io_errors_handler("file", new_html_absolue_path, request)
 
     new_dir_path = f"{new_html_path[:-5]}_files"
     new_dir_name = os.path.split(new_dir_path)[1]
     new_dir_absolute_path = os.path.abspath(new_dir_path)
     logging.info(f"create a directory for assets: {new_dir_absolute_path}")
 
-    try:
-        os.mkdir(new_dir_path)
-    except FileExistsError:
-        print("You have not deleted files from this folder since the last \
-launch of the program!")
-        return "<Error>"
+    io_errors_handler("directory", new_dir_absolute_path, request)
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
         hostname = urlparse(url).hostname

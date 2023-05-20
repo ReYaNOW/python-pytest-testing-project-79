@@ -1,6 +1,7 @@
-import argparse
-import sys
 import os
+import sys
+import logging
+import argparse
 from page_loader import download
 
 
@@ -31,10 +32,12 @@ def main():
         sys.exit(0)
 
     args = parser.parse_args()
-    path = download(args.url, args.output)
-    absolute_path = os.path.abspath(path)
-    if path != '<Error>':
+    try:
+        path = download(args.url, args.output)
+        absolute_path = os.path.abspath(path)
         print(f"Page was downloaded as '{absolute_path}'")
+    except Exception as error:
+        logging.error(error)
 
 
 if __name__ == "__main__":
