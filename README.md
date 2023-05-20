@@ -22,6 +22,7 @@ PageLoader – утилита командной строки, которая с
 [Пример работы в виде аскинемы](https://asciinema.org/a/585102?autoplay=1)  
 [Пример с сайтом, содержащим изображения](https://asciinema.org/a/585548?autoplay=1)  
 [Пример с сайтом, содержащим различные файлы (css, js, png)](https://asciinema.org/a/585743?autoplay=1)  
+[Пример работы программы, где во время работы возникли те или иные ошибки](https://asciinema.org/a/586208?autoplay=1)  
 [Запуск pytest с live logging](https://asciinema.org/a/586031?autoplay=1)  
 
 
