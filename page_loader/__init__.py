@@ -84,12 +84,15 @@ def download(url: str, path: str = os.getcwd()) -> str:
         print("Not correct URL!")
         return "<Error>"
 
-    if request.status_code == 404:
-        print("Site with such url is not found!")
-        return "<Error>"
-    if request.status_code != 200:
-        print("Internal Server Error")
-        return "<Error>"
+    match request.status_code:
+        case 404:
+            print("Site with such url is not found!")
+            return "<Error>"
+        case 200:
+            pass
+        case _:
+            print("Internal Server Error")
+            return "<Error>"
 
     new_html_file_name = url_to_filename(url)
     new_html_path = os.path.join(path, new_html_file_name)
@@ -119,7 +122,3 @@ launch of the program!")
         file.write(str(soup.prettify()))
 
     return new_html_path
-
-
-if __name__ == "__main__":
-    download("https://google", "/home/reyan/testdir")
