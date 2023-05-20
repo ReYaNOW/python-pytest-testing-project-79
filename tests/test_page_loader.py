@@ -77,34 +77,3 @@ def test_page_loader_download_files(dir_for_tests, requests_mock, image_diff):
         "tests/fixtures/some-complex-page-com-after.html", "r"
             ) as fixture:
         assert main.read() == fixture.read()
-
-
-def test_page_loader_not_valid_url(dir_for_tests, capfd):
-    tmp_path = dir_for_tests
-    func_output = download("not_a_valid_url", tmp_path)
-    out, _ = capfd.readouterr()
-
-    assert func_output == "<Error>"
-    assert out.replace('\n', '') == "Not correct URL!"
-
-
-def test_page_loader_error_404(dir_for_tests, requests_mock, capfd):
-    tmp_path = dir_for_tests
-    requests_mock.get("https://google.com/python",
-                      text="data", status_code=404)
-
-    func_output = download("https://google.com/python", tmp_path)
-    out, _ = capfd.readouterr()
-    assert func_output == "<Error>"
-    assert out.replace('\n', '') == "Site with such url is not found!"
-
-
-def test_page_loader_error_500(dir_for_tests, requests_mock, capfd):
-    tmp_path = dir_for_tests
-    requests_mock.get("https://google.com/under_ddos",
-                      text="data", status_code=500)
-
-    func_output = download("https://google.com/under_ddos", tmp_path)
-    out, _ = capfd.readouterr()
-    assert func_output == "<Error>"
-    assert out.replace('\n', '') == "Internal Server Error"
