@@ -1,6 +1,6 @@
 import os
 import requests
-from requests.exceptions import MissingSchema, ConnectionError
+from requests.exceptions import MissingSchema
 
 
 headers = {
@@ -21,9 +21,6 @@ def request_errors_handler(url):
             raise MissingSchema("Not correct URL!")
         raise MissingSchema(f"Your url: '{url}', there http or https is \
 missing")
-
-    except ConnectionError:
-        raise ConnectionError("Not correct URL!")
 
 
 def file_errors_handler(path, request):
