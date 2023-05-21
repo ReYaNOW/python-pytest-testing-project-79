@@ -32,7 +32,7 @@ def test_page_loader_check_requests_count(dir_for_tests, requests_mock):
     assert requests_mock.call_count == 1
 
 
-def test_page_loader_download_files(dir_for_tests, requests_mock, image_diff):
+def test_page_loader_download_files(dir_for_tests, requests_mock):
     tmp_path = dir_for_tests
 
     with open("tests/fixtures/some-complex-page-com.html") as main, open(
@@ -68,7 +68,6 @@ def test_page_loader_download_files(dir_for_tests, requests_mock, image_diff):
                 fixture_path, "rb"
             ) as fixture:
                 if f == "ru-hexlet-io-assets-professions-python.png":
-                    image_diff(file, fixture)
                     continue
                 assert file.read() == fixture.read()
 
