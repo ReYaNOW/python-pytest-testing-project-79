@@ -35,6 +35,7 @@ def test_page_loader_check_requests_count(dir_for_tests, requests_mock):
 def test_page_loader_download_files(dir_for_tests, requests_mock):
     tmp_path = dir_for_tests
 
+    print(os.listdir(os.getcwd()))
     with open("tests/fixtures/some-complex-page-com.html") as main, open(
         "tests/fixtures/fixtures_for_complex/ru-hexlet-io-assets-professions-python.png",  # noqa E501
         "br",
