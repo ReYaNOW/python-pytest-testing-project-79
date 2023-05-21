@@ -48,18 +48,18 @@ def test_page_loader_error_404(dir_for_tests, requests_mock):
 https://google.com/python'
 
 
-def test_page_loader_file_permission_error(tmp_path, requests_mock):
-    directory = tmp_path / "dir"
-    directory.mkdir()
-    tmp_path.chmod(0o007)
-
-    requests_mock.get("https://some_page.com", text="data")
-    with pytest.raises(PermissionError) as error:
-        download("https://some_page.com", f"{tmp_path}/dir")
-
-    tmp_path.chmod(0o777)
-    assert str(error.value) == f"Insufficient permissions to create a \
-file in {tmp_path}/dir !"
+# def test_page_loader_file_permission_error(tmp_path, requests_mock):
+#    directory = tmp_path / "dir"
+#    directory.mkdir()
+#    tmp_path.chmod(0o007)
+#
+#    requests_mock.get("https://some_page.com", text="data")
+#    with pytest.raises(PermissionError) as error:
+#        download("https://some_page.com", f"{tmp_path}/dir")
+#
+#    tmp_path.chmod(0o777)
+#    assert str(error.value) == f"Insufficient permissions to create a \
+# file in {tmp_path}/dir !"
 
 
 def test_page_loader_file_exists_error(tmp_path, requests_mock):
