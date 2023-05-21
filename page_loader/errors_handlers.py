@@ -11,12 +11,13 @@ headers = {
 
 def request_errors_handler(url):
     try:
-        request = requests.get(url, headers=headers)
+        request = requests.get(url, headers=headers,
+                               allow_redirects=True, timeout=(3, 7))
         request.raise_for_status()
         return request
 
     except MissingSchema:
-        if '.' not in url:
+        if '.' not in url and 'localhost' not in url:
             raise MissingSchema("Not correct URL!")
         raise MissingSchema(f"Your url: '{url}', there http or https is \
 missing")

@@ -36,7 +36,6 @@ def main():
         path = download(args.url, args.output)
         absolute_path = os.path.abspath(path)
         print(f"Page was downloaded as '{absolute_path}'")
-        sys.exit(0)
     except Exception as error:
         logging.error(error)
         sys.exit(1)

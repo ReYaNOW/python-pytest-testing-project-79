@@ -1,6 +1,5 @@
 import os
 import logging
-import requests
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from page_loader.errors_handlers import request_errors_handler
@@ -62,7 +61,7 @@ def get_images(request_text, path, new_dir_name, hostname):
         obj_link = url_validator(obj_link, hostname)
         if urlparse(obj_link).hostname != hostname:
             continue
-        image = requests.get(obj_link, headers=headers).content
+        image = request_errors_handler(obj_link).content
 
         splited_link = os.path.splitext(obj_link)
         if splited_link[-1] == "":
