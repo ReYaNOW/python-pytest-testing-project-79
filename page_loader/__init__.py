@@ -2,6 +2,7 @@ import os
 import logging
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+import validators
 from page_loader.errors_handlers import request_errors_handler
 from page_loader.errors_handlers import file_errors_handler
 from page_loader.errors_handlers import dir_errors_handler
@@ -21,14 +22,14 @@ def url_to_filename(url: str, type=".html"):
     return result + type
 
 
-def url_validator(link, hostname):
-    if link[:4] != "http" and link[:4] != "www.":
+def url_validator(link, hostname, scheme):
+    if not validators.url(link):
         if link[0] != "/":
             link = f"/{link}"
         link = f"{hostname}{link}"
 
     if link[:4] != "http":
-        link = f"https://{link}"
+        link = f"{scheme}://{link}"
     return link
 
 
@@ -48,7 +49,7 @@ def match_obect_attrs(attrs):
     return obj_download_tag
 
 
-def get_images(request_text, path, new_dir_name, hostname):
+def get_images(request_text, path, new_dir_name, hostname, scheme):
     soup = BeautifulSoup(request_text, "html.parser")
     objects = soup.find_all(["img", "link", "script"])
 
@@ -58,7 +59,7 @@ def get_images(request_text, path, new_dir_name, hostname):
             continue
 
         obj_link = object.get(obj_download_tag)
-        obj_link = url_validator(obj_link, hostname)
+        obj_link = url_validator(obj_link, hostname, scheme)
         if urlparse(obj_link).hostname != hostname:
             continue
         image = request_errors_handler(obj_link).content
@@ -104,8 +105,10 @@ def download(url: str, path: str = os.getcwd()) -> str:
     dir_errors_handler(new_dir_absolute_path)
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
+        scheme = urlparse(url).scheme
         hostname = urlparse(url).hostname
-        soup = get_images(file.read(), new_dir_path, new_dir_name, hostname)
+        soup = get_images(file.read(), new_dir_path, new_dir_name,
+                          hostname, scheme)
         file.seek(0)
         file.write(str(soup.prettify()))
 

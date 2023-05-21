@@ -13,6 +13,7 @@ beautifulsoup4 = "^4.12.2"
 requests-mock = "^1.10.0"
 pytest = "^6.2.5"
 flake8 = "^3.9.2"
+validators = "^0.20.0"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader_script:main"
