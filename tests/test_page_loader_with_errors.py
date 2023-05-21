@@ -51,7 +51,7 @@ https://google.com/python'
 def test_page_loader_file_permission_error(tmp_path, requests_mock):
     directory = tmp_path / "dir"
     directory.mkdir()
-    tmp_path.chmod(0o007)
+    tmp_path.chmod(0o222)
 
     requests_mock.get("https://some_page.com", text="data")
     with pytest.raises(PermissionError) as error:
