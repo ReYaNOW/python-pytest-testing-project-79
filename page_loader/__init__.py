@@ -29,7 +29,7 @@ def url_validator(link, hostname):
         link = f"{hostname}{link}"
 
     if link[:4] != "http":
-        link = f"http://{link}"
+        link = f"https://{link}"
     return link
 
 
