@@ -11,9 +11,9 @@ python = "^3.10"
 pytest-cov = "^4.0.0"
 beautifulsoup4 = "^4.12.2"
 flake8 = "^6.0.0"
-pytest = "^7.3.1"
 requests-mock = "^1.10.0"
 pytest-image-diff = "^0.0.11"
+pytest = "^6.2.5"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader_script:main"
