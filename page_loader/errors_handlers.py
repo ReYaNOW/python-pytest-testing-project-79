@@ -25,26 +25,25 @@ missing")
         raise ConnectionError("Not correct URL!")
 
 
-def io_errors_handler(type, path, request):
-    match type:
-        case "file":
-            try:
-                with open(path, "w") as html_file:
-                    html_file.write(request.text)
-            except FileNotFoundError:
-                raise FileNotFoundError(f"Directory does not exist \
+def file_errors_handler(path, request):
+    try:
+        with open(path, "w") as html_file:
+            html_file.write(request.text)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Directory does not exist \
 here! {path}")
 
-            except PermissionError:
-                path = os.path.split(path)[0]
-                raise PermissionError(f"Insufficient permissions to create a \
-{type} in {path} !")
+    except PermissionError:
+        path = os.path.split(path)[0]
+        raise PermissionError(f"Insufficient permissions to create a \
+file in {path} !")
 
-        case "directory":
-            try:
-                os.mkdir(path)
 
-            except FileExistsError:
-                path = os.path.split(path)[0]
-                raise FileExistsError(f"You have not deleted files from this \
-folder ({path}) since the last launch of the program!")
+def dir_errors_handler(path):
+    try:
+        os.mkdir(path)
+
+    except FileExistsError:
+        path = os.path.split(path)[0]
+        raise FileExistsError(f"You have not deleted files from this \
+directory ({path}) since the last launch of the program!")

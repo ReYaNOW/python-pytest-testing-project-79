@@ -4,7 +4,8 @@ import requests
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from page_loader.errors_handlers import request_errors_handler
-from page_loader.errors_handlers import io_errors_handler
+from page_loader.errors_handlers import file_errors_handler
+from page_loader.errors_handlers import dir_errors_handler
 
 logging.basicConfig(level=logging.INFO)
 
@@ -38,18 +39,25 @@ headers = {
 }
 
 
+def match_obect_attrs(attrs):
+    if 'href' in attrs:
+        obj_download_tag = "href"
+    elif 'src' in attrs:
+        obj_download_tag = "src"
+    else:
+        obj_download_tag = ''
+    return obj_download_tag
+
+
 def get_images(request_text, path, new_dir_name, hostname):
     soup = BeautifulSoup(request_text, "html.parser")
     objects = soup.find_all(["img", "link", "script"])
 
     for object in objects:
-        match object.attrs:
-            case {"href": _}:
-                obj_download_tag = "href"
-            case {"src": _}:
-                obj_download_tag = "src"
-            case _:
-                continue
+        obj_download_tag = match_obect_attrs(object.attrs)
+        if not obj_download_tag:
+            continue
+
         obj_link = object.get(obj_download_tag)
         obj_link = url_validator(obj_link, hostname)
         if urlparse(obj_link).hostname != hostname:
@@ -87,14 +95,14 @@ def download(url: str, path: str = os.getcwd()) -> str:
     new_html_absolue_path = os.path.abspath(new_html_path)
     logging.info(f"write html file: {new_html_absolue_path}")
 
-    io_errors_handler("file", new_html_absolue_path, request)
+    file_errors_handler(new_html_absolue_path, request)
 
     new_dir_path = f"{new_html_path[:-5]}_files"
     new_dir_name = os.path.split(new_dir_path)[1]
     new_dir_absolute_path = os.path.abspath(new_dir_path)
     logging.info(f"create a directory for assets: {new_dir_absolute_path}")
 
-    io_errors_handler("directory", new_dir_absolute_path, request)
+    dir_errors_handler(new_dir_absolute_path)
 
     with open(new_html_path, "r+", encoding="utf-8") as file:
         hostname = urlparse(url).hostname

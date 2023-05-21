@@ -71,7 +71,7 @@ def test_page_loader_file_exists_error(tmp_path, requests_mock):
         download("https://some_page.com", tmp_path)
 
     assert str(error.value) == f"You have not deleted files from this \
-folder ({tmp_path}) since the last launch of the program!"
+directory ({tmp_path}) since the last launch of the program!"
 
 
 def test_page_loader_file_not_found_error(dir_for_tests, requests_mock):
