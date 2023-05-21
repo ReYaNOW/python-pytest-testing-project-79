@@ -38,6 +38,7 @@ def main():
         print(f"Page was downloaded as '{absolute_path}'")
     except Exception as error:
         logging.error(error)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
