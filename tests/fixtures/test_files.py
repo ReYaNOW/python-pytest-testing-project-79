@@ -1,13 +1,16 @@
+import os
 import pytest
-
 pytest_plugins = [
     "tests.fixtures.test_files",
 ]
 
 
-@pytest.fixture
-def all_fixtures():
-    return "tests/fixtures/fixtures_for_complex"  # noqa E501
+def file_fixtures(file):
+    if 'code' in os.listdir(os.getcwd()):
+        file_path = os.path.join('code', 'tests/fixtures', file)
+    else:
+        file_path = os.path.join('tests/fixtures', file)
+    return file_path
 
 
 @pytest.fixture

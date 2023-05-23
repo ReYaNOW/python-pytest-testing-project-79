@@ -2,8 +2,9 @@ import os  # noqa
 import logging
 import pytest
 from page_loader import download
+from fixtures.test_files import file_fixtures
 
-logging.getLogger('PIL').setLevel(logging.CRITICAL)
+logging.getLogger("PIL").setLevel(logging.CRITICAL)
 logging.basicConfig(level=logging.INFO)
 
 
@@ -32,15 +33,19 @@ def test_page_loader_check_requests_count(dir_for_tests, requests_mock):
     assert requests_mock.call_count == 1
 
 
-def test_page_loader_download_files(dir_for_tests, requests_mock, main, css, png, js, all_fixtures, html_after):  # noqa E501
+def test_page_loader_download_files(dir_for_tests, requests_mock):
     tmp_path = dir_for_tests
 
-    with open(main) as main, open(png, "br",) as image, open(
-        css  # noqa E501
+    with open(file_fixtures("some-complex-page-com.html")) as main, open(
+        file_fixtures(
+            "fixtures_for_complex/ru-hexlet-io-assets-professions-python.png"
+        ),
+        "br",
+    ) as image, open(
+        file_fixtures("fixtures_for_complex/ru-hexlet-io-assets-application.css")  # noqa E501
     ) as css, open(
-        js
+        file_fixtures("fixtures_for_complex/ru-hexlet-io-packs-js-runtime.js")
     ) as js:
-
         requests_mock.get("https://ru.hexlet.io/courses", text=main.read())
         requests_mock.get(
             "https://ru.hexlet.io/assets/application.css", text=css.read()
@@ -49,27 +54,24 @@ def test_page_loader_download_files(dir_for_tests, requests_mock, main, css, png
             "https://ru.hexlet.io/assets/professions/python.png",
             content=image.read(),
         )
-        requests_mock.get(
-            "https://ru.hexlet.io/packs/js/runtime.js", text=js.read()
-        )
+        requests_mock.get("https://ru.hexlet.io/packs/js/runtime.js",
+                          text=js.read())
 
         download("https://ru.hexlet.io/courses", tmp_path)
         directory = os.path.join(tmp_path, "ru-hexlet-io-courses_files")
         for f in os.listdir(directory):
             file_path = os.path.join(directory, f)
-            fixture_path = os.path.join(
-                all_fixtures, f
-            )
+            fixture_path = os.path.join(file_fixtures(
+                "fixtures_for_complex"), f)
 
             with open(file_path, "rb") as file, open(
-                fixture_path, "rb"
-            ) as fixture:
+                      fixture_path, "rb") as fixture:
                 if f == "ru-hexlet-io-assets-professions-python.png":
                     continue
                 assert file.read() == fixture.read()
 
         main_path = os.path.join(tmp_path, "ru-hexlet-io-courses.html")
     with open(main_path) as main, open(
-        html_after, "r"
-            ) as fixture:
+        file_fixtures("some-complex-page-com-after.html"), "r"
+    ) as fixture:
         assert main.read() == fixture.read()
