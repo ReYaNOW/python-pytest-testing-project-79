@@ -65,7 +65,7 @@ def test_page_loader_download_files(dir_for_tests, requests_mock):
                 "fixtures_for_complex"), f)
 
             with open(file_path, "rb") as file, open(
-                      fixture_path, "rb") as fixture:
+                    fixture_path, "rb") as fixture:
                 if f == "ru-hexlet-io-assets-professions-python.png":
                     continue
                 assert file.read() == fixture.read()
