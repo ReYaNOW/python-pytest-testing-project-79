@@ -31,11 +31,6 @@ def file_errors_handler(path, request):
         raise FileNotFoundError(f"Directory does not exist \
 here! {path}")
 
-    except PermissionError:
-        path = os.path.split(path)[0]
-        raise PermissionError(f"Insufficient permissions to create a \
-file in {path} !")
-
 
 def dir_errors_handler(path):
     try:
