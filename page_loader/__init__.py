@@ -14,10 +14,10 @@ def url_to_filename(url: str, type=".html"):
     new_url = url.replace("https://", "").replace("http://", "")
     result = ""
     for char in new_url:
-        if not char.isdigit() and not char.isalpha():
-            result += "-"
-        else:
+        if char.isalnum():
             result += char
+        else:
+            result += "-"
 
     return result + type
 
@@ -33,12 +33,6 @@ def url_validator(link, hostname, scheme):
     return link
 
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) \
-            Gecko/20100101 Firefox/112.0"
-}
-
-
 def match_obect_attrs(attrs):
     if 'href' in attrs:
         obj_download_tag = "href"
@@ -47,6 +41,12 @@ def match_obect_attrs(attrs):
     else:
         obj_download_tag = ''
     return obj_download_tag
+
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) \
+            Gecko/20100101 Firefox/112.0"
+}
 
 
 def get_images(request_text, path, new_dir_name, hostname, scheme):
